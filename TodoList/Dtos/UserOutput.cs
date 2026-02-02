@@ -1,11 +1,14 @@
-﻿namespace TodoList.Dtos
+﻿using System.ComponentModel;
+using TodoList.Models;
+
+namespace TodoList.Dtos
 {
     public class UserOutput
     (
         int Id, 
         string Name,
         string Token,
-        List<Task?> tasks
+       IEnumerable<Tache> taches
     );
     
 }

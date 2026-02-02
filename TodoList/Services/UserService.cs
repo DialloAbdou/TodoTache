@@ -1,32 +1,83 @@
-﻿using TodoList.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using TodoList.Data;
+using TodoList.Dtos;
+using TodoList.Models;
 
 namespace TodoList.Services
 {
     public class UserService : IUserService
     {
-        public Task<UserOutput> AddUser(UserImput userImput)
+        private readonly TacheDbContext _dbContext;
+
+        public UserService(TacheDbContext tacheDbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = tacheDbContext;
         }
 
-        public Task<bool> DeleteUSerAsync(int id)
+        public async Task<UserOutput> AddUserAsync(UserImput userImput)
         {
-            throw new NotImplementedException();
+            var user = new User
+            {
+                Nom = userImput.Name,
+                Token = Guid.NewGuid().ToString()
+            };
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
+            return GetUserOutput(user);
         }
 
-        public Task<UserOutput> GetAllUserAsync()
+        public async Task<bool> DeleteUSerAsync(int id)
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Users
+                            .Where(u => u.Id == id)
+                            .ExecuteDeleteAsync();
+            return result > 0;
         }
 
-        public Task<UserOutput> GetUserByIdAsync(int id)
+        public async Task<IEnumerable<UserOutput>> GetAllTacheAsync()
         {
-            throw new NotImplementedException();
+            var _user = (await _dbContext.Users.ToListAsync())
+                     .Select(u => GetUserOutput(u)).ToList();
+            return _user;
         }
 
-        public Task<bool> UpdateUserAsync(UserImput userImput, int id)
+        public async Task<UserOutput?> GetUserByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return user == null ? null : GetUserOutput(user);
+
+        }
+        public async Task<bool> UpdateUserAsync(UserImput userImput, int id)
+        {
+            var result = await _dbContext.Users.Where(u => u.Id == id)
+                 .ExecuteUpdateAsync(setter =>
+                   setter
+                   .SetProperty(t => t.Nom, userImput.Name)
+                   .SetProperty(t => t.Token, userImput.Token));
+
+            return result > 0;
+
+        }
+
+        private User GetUser(UserImput userImput)
+        {
+            return new User
+            {
+                Nom = userImput.Name,
+                Token = userImput.Token!
+            };
+        }
+
+        private UserOutput GetUserOutput(User user)
+        {
+            return new UserOutput
+                (
+                   user.Id,
+                   user.Nom,
+                    user.Token,
+                    user.Taches
+                );
         }
     }
 }
