@@ -17,45 +17,50 @@ namespace TodoList.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<User>(u =>
+            // ======== USer =============
+            modelBuilder.Entity<User>(entity=>
             {
-                u.ToTable("Users");
-                u.Property(u => u.Nom).IsRequired();
-                u.Property(u=>u.Token).IsRequired();
-                u.HasMany(u=>u.Taches)
-                .WithOne(t=>t.User)
-                .HasForeignKey(t=>t.User.Id);
+                entity.ToTable("Users");
+                entity.HasKey(t => t.Id);
+
+                entity.Property(u => u.Nom)
+                .IsRequired()
+                .HasMaxLength(100);
+
+                entity.Property(u => u.Token)
+                .IsRequired()
+                .HasMaxLength(10);
+
+                entity.HasMany(u => u.Taches)
+                .WithOne(t => t.User)
+                .HasForeignKey(t=>t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             });
 
-            modelBuilder.Entity<Tache>(t =>
+            // ============Tache =========================
+            modelBuilder.Entity<Tache>(entity =>
             {
-                t.ToTable("Taches"); 
-                t.Property(t=>t.Titre).IsRequired();
-                t.Property(t=>t.DateDebut)
+                entity.ToTable("Taches");
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Titre)
+                .IsRequired()
+                .HasMaxLength(150);
+
+                entity.Property(t => t.DateDebut)
                 .IsRequired();
-                t.Property(t => t.DateFin)
+
+                entity.Property(t => t.DateFin)
                 .IsRequired(false);
 
-                t.HasOne(t=>t.User)
-                .WithMany(u=>u.Taches)
-                .HasForeignKey(t=>t.User.Id);
+                entity.HasIndex(t => t.UserId);
 
 
             });
-            //    .HasMany(u=>u.Taches)
-            //    .WithOne(t=>t.User)
-            //    .HasForeignKey(t=>t.UserId)
-            //    .IsRequired();
 
-            //var entitybuilder= modelBuilder.Entity<Tache>();
-            //entitybuilder.Property(t => t.Titre)
-            //      .IsRequired()
-            //      .HasMaxLength(100);
-            //entitybuilder.Property(t => t.DateDebut)
-            //    .IsRequired();
+   
 
-
-            //base.OnModelCreating(modelBuilder);
         }
 
 

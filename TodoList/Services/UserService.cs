@@ -3,6 +3,7 @@ using System.Collections;
 using TodoList.Data;
 using TodoList.Dtos;
 using TodoList.Models;
+using TodoList.Tools;
 
 namespace TodoList.Services
 {
@@ -20,11 +21,12 @@ namespace TodoList.Services
             var user = new User
             {
                 Nom = userImput.Name,
-                Token = Guid.NewGuid().ToString()
+                Token = Outils.GenerateCode8()
             };
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
-            return GetUserOutput(user);
+             var userOut =  GetUserOutput(user);
+            return userOut;
         }
 
         public async Task<bool> DeleteUSerAsync(int id)

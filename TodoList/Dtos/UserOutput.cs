@@ -8,7 +8,7 @@ namespace TodoList.Dtos
         int Id, 
         string Name,
         string Token,
-       IEnumerable<Tache> taches
+       IEnumerable<Tache>? taches
     );
     
 }

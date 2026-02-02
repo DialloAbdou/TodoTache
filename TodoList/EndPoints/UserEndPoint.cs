@@ -29,8 +29,8 @@ namespace TodoList.EndPoints
             
             )
         {
-             var user = await _userService.AddUserAsync(userImput);
-               return Results.Ok(user);
+             var userOut = await _userService.AddUserAsync(userImput);
+               return Results.Ok(userOut);
         }
 
         private static async Task<IResult> GetUserByIdAsyn

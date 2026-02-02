@@ -6,7 +6,7 @@ using TodoList.Services;
 var builder = WebApplication.CreateBuilder();
 
 builder.Services.AddScoped<ITacheService, TacheService>();
-
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<TacheDbContext>(op=>op
                 .UseSqlServer(builder.Configuration.GetConnectionString("SqlConnexion")));
 
