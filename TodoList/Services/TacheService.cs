@@ -8,7 +8,7 @@ namespace TodoList.Services
 {
     public class TacheService : ITacheService
     {
-      
+
         public TacheDbContext _tacheDbContext { get; }
         public TacheService(TacheDbContext tacheDbContext)
         {
@@ -17,22 +17,50 @@ namespace TodoList.Services
         public async Task<IEnumerable<TacheOutput>> GetAllTacheAsync()
         {
             var taches = (await _tacheDbContext.Taches.ToListAsync())
-                .Select(t=>GetTacheOutput(t)).ToList();
+                .Select(t => GetTacheOutput(t)).ToList();
             return taches;
         }
 
-        public async Task<TacheOutput> AddTacheAsync(TacheImput tacheImput)
-        {
-            var tache = GetTache(tacheImput);
-            await _tacheDbContext.Taches.AddAsync(tache);
-            await _tacheDbContext.SaveChangesAsync();
-            return GetTacheOutput(tache);
+        //public async Task<TacheOutput> AddTacheAsync(TacheImput tacheImput, string tokenUser)
+        //{
+        //    // recuperation d'user en fonction du tocken
+        //    // ajouter user dans la tache
+        //    var user = await _tacheDbContext.Users.FirstOrDefaultAsync(u => u.Token == token);
+        //    if (user != null)
+        //    {
 
+        //        var tache  = GetTache(tacheImput);
+
+        //        await _tacheDbContext.Taches.AddAsync(tache);
+        //        await _tacheDbContext.SaveChangesAsync();
+        //        return GetTacheOutput(tache);
+        //    }
+        //    return null;
+
+        //}
+
+
+
+        public async Task<TacheOutput> AddTacheAsync(string titre, string tokenUser)
+        {
+            User? user = await _tacheDbContext.Users.FirstOrDefaultAsync(u => u.Token == tokenUser);
+            if (user == null) return null;
+            var tache = new Tache
+            {
+                Titre =titre,
+                DateDebut = DateTime.Now,
+                UserId = user.Id,
+            };
+            _tacheDbContext.Taches.Add(tache);
+     
+          await  _tacheDbContext.SaveChangesAsync();
+
+            return GetTacheOutput(tache);                 
         }
 
         public async Task<TacheOutput?> GeTacheById(int id)
         {
-            var tache = await _tacheDbContext.Taches.FirstOrDefaultAsync(t=> t.Id == id);
+            var tache = await _tacheDbContext.Taches.FirstOrDefaultAsync(t => t.Id == id);
             if (tache is null) return null;
             return GetTacheOutput(tache);
         }
@@ -62,7 +90,7 @@ namespace TodoList.Services
             var _result = await _tacheDbContext.Taches.Where(t => t.Id == id)
                .ExecuteUpdateAsync(s => s.SetProperty(t => t.Titre, tacheImput.Titre)
                .SetProperty(t => t.DateDebut, tacheImput.DateDebut)
-               .SetProperty(t=>t.DateFin, tacheImput.DateFin));
+               .SetProperty(t => t.DateFin, tacheImput.DateFin));
             return _result > 0;
 
         }
@@ -73,5 +101,14 @@ namespace TodoList.Services
                .Where(t => t.Id == id).ExecuteDeleteAsync();
             return _result > 0;
         }
+
+        public async Task<bool> USerIsExist(string tokenUser)
+        {
+            var user = await _tacheDbContext.Users.FirstOrDefaultAsync(u => u.Token == tokenUser);
+            if (user == null) return false;
+            return true;
+
+        }
+
     }
 }

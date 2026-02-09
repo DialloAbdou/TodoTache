@@ -62,14 +62,6 @@ namespace TodoList.Services
 
         }
 
-        private User GetUser(UserImput userImput)
-        {
-            return new User
-            {
-                Nom = userImput.Name,
-                Token = userImput.Token!
-            };
-        }
 
         private UserOutput GetUserOutput(User user)
         {

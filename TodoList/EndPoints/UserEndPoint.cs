@@ -24,7 +24,7 @@ namespace TodoList.EndPoints
         }
 
         private static async Task<IResult> AddUSerAsync(
-                [FromBody]  UserImput userImput,
+                [FromBody] UserImput userImput,
                 [FromServices] IUserService _userService
             
             )
@@ -39,8 +39,8 @@ namespace TodoList.EndPoints
               [FromServices] IUserService _userService
             )
         {
-             var user = await _userService.GetUserByIdAsync(id);
-            return Results.Ok(user);
+             UserOutput? user = await _userService.GetUserByIdAsync(id);
+             return Results.Ok(user);
         }
     }
 }
