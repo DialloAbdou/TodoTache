@@ -10,6 +10,7 @@ namespace TodoList.Services
          Task<bool> UpdateTacheAsync(int  id, TacheImput tacheImput);
          Task<bool> DeleteTacheAsync(int id);
         Task<bool> USerIsExist(string tokenUser);
+        Task<bool> USerIsValid(string tolenUser);
  
     }
 }

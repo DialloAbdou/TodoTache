@@ -21,25 +21,6 @@ namespace TodoList.Services
             return taches;
         }
 
-        //public async Task<TacheOutput> AddTacheAsync(TacheImput tacheImput, string tokenUser)
-        //{
-        //    // recuperation d'user en fonction du tocken
-        //    // ajouter user dans la tache
-        //    var user = await _tacheDbContext.Users.FirstOrDefaultAsync(u => u.Token == token);
-        //    if (user != null)
-        //    {
-
-        //        var tache  = GetTache(tacheImput);
-
-        //        await _tacheDbContext.Taches.AddAsync(tache);
-        //        await _tacheDbContext.SaveChangesAsync();
-        //        return GetTacheOutput(tache);
-        //    }
-        //    return null;
-
-        //}
-
-
 
         public async Task<TacheOutput> AddTacheAsync(string titre, string tokenUser)
         {
@@ -102,13 +83,31 @@ namespace TodoList.Services
             return _result > 0;
         }
 
+        /// <summary>
+        /// Verifier 
+        /// si l'utilisateur lie à cette tache
+        /// </summary>
+        /// <param name="tokenUser"></param>
+        /// <returns></returns>
         public async Task<bool> USerIsExist(string tokenUser)
         {
-            var user = await _tacheDbContext.Users.FirstOrDefaultAsync(u => u.Token == tokenUser);
-            if (user == null) return false;
-            return true;
-
+            var taches = await _tacheDbContext.Taches
+                .Include(t=>t.User).Where(t=>t.User.Token == tokenUser).ToListAsync();
+             if( taches.Any() ) return true;
+             return false;
         }
 
+        /// <summary>
+        /// elle verifie ce token existe dans la base de donnée
+        /// </summary>
+        /// <param name="tolenUser"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<bool> USerIsValid(string tolenUser)
+        {
+            var isExist = await _tacheDbContext.Users.FirstOrDefaultAsync(u=>u.Token == tolenUser);
+            if( isExist == null ) return false;
+            return true;
+        }
     }
 }

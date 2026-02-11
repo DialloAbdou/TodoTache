@@ -43,7 +43,7 @@ namespace TodoList.EndPoints
             )
         {
             var _result = _validator.Validate(tacheImput);
-            var isExist = await _tacheService.USerIsExist(tokenUSer);
+            var isExist = await _tacheService.USerIsValid(tokenUSer);
 
             if (!_result.IsValid || !isExist)
             {
