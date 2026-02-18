@@ -39,6 +39,7 @@ namespace TodoList.EndPoints
               [FromBody] TacheImput tacheImput,
               [FromServices] ITacheService _tacheService,
               [FromServices] IValidator<TacheImput> _validator,
+              [FromServices] ILogger<Program> logger,
               [FromHeader] String tokenUSer
             )
         {
@@ -47,6 +48,7 @@ namespace TodoList.EndPoints
 
             if (!_result.IsValid || !isExist)
             {
+                logger.LogError(_result.Errors.ToString());
                 return Results.BadRequest(_result.Errors.Select(e => new
                 {
                     e.ErrorMessage,
@@ -99,7 +101,6 @@ namespace TodoList.EndPoints
             var isupdate = await _tacheService.UpdateTacheAsync(id, _tacheImput);  
              if(isupdate)  return  Results.Ok(isupdate);
              return Results.NotFound();
-           
 
         }
         private static async Task<IResult> DeleteTacheAsync
