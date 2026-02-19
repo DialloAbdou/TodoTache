@@ -7,6 +7,11 @@ using TodoList.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
+builder.Services.AddStackExchangeRedisCache(op =>
+{
+    op.Configuration = "localhost:6379";
+});
+
 var loggerConfiguration = new LoggerConfiguration();
 loggerConfiguration.WriteTo.Console();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
